@@ -1,8 +1,7 @@
 import os
-from PyQt5.QtCore import QObject, QCoreApplication
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QMessageBox
-from qgis.core import QgsProject
+from PyQt5.QtWidgets import QAction
 
 from .tile_boundary_layer_manager import TileBoundaryLayerManager
 
