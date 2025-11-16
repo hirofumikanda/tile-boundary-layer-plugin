@@ -106,6 +106,22 @@ class TileBoundaryLayerManager(QObject):
             finally:
                 self.current_layer = None
     
+    def _calculate_font_size(self, zoom_level):
+        """ズームレベルに応じてフォントサイズを計算"""
+        # ベースフォントサイズ（ズームレベル10の場合）
+        base_font_size = 8
+        base_zoom = 10
+        
+        # ズームレベルが高くなるほどフォントを小さく、低くなるほど大きく
+        # ズームレベル差1につき約20%サイズ変更
+        size_factor = 0.8 ** (zoom_level - base_zoom)
+        calculated_size = base_font_size * size_factor
+        
+        # 最小サイズ4pt、最大サイズ16ptに制限
+        font_size = max(4, min(16, int(calculated_size)))
+        
+        return font_size
+    
     def create_tile_layer(self, zoom_level):
         """指定されたズームレベルでタイル境界レイヤを作成"""
         # ==== 表示範囲取得 ==== #
@@ -180,9 +196,13 @@ class TileBoundaryLayerManager(QObject):
         pal.centroidInside = True
         pal.dist = 0
 
+        # ズームレベルに応じてフォントサイズを調整
+        # ズームレベルが高くなるほど小さくする
+        font_size = self._calculate_font_size(zoom_level)
+        
         text_format = QgsTextFormat()
         font = QFont()
-        font.setPointSize(8)
+        font.setPointSize(font_size)
         text_format.setFont(font)
         text_format.setColor(QColor(0, 0, 0))
         buffer = text_format.buffer()
