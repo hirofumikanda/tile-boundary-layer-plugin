@@ -4,6 +4,7 @@ qgisMinimumVersion=3.0
 description=リアルタイムでタイル境界を表示するプラグイン
 version=1.0.0
 author=Hirofumi Kanda
+email=nandakandahirofumi322@yahoo.co.jp
 
 about=地図のパンやズームに応じて自動的にタイル境界とタイル座標を表示します。Webメルカトルタイル方式に対応し、開発者やGIS作業者がタイル構造を視覚的に理解するのに役立ちます。
 
