@@ -44,6 +44,12 @@ def tile_bounds(tx, ty, z):
     miny = ORIGIN_SHIFT - (ty + 1) * TILE_SIZE * res
     return (minx, miny, maxx, maxy)
 
+def is_valid_tile(tx, ty, z):
+    """指定されたタイル座標がWebメルカトルの有効範囲内かチェック"""
+    # ズームレベルzにおける有効なタイル範囲は 0 <= x,y < 2^z
+    max_tile = 2 ** z
+    return 0 <= tx < max_tile and 0 <= ty < max_tile
+
 def get_canvas_zoom(iface) -> int:
     """キャンバスの表示状態から Webメルカトルの z を推定"""
     canvas = iface.mapCanvas()
@@ -161,6 +167,10 @@ class TileBoundaryLayerManager(QObject):
         features = []
         for tx in range(tx0, tx1 + 1):
             for ty in range(ty0, ty1 + 1):
+                # Webメルカトルの有効範囲内のタイルのみ生成
+                if not is_valid_tile(tx, ty, zoom_level):
+                    continue
+                    
                 minx, miny, maxx, maxy = tile_bounds(tx, ty, zoom_level)
                 pts = [
                     QgsPointXY(minx, miny),
