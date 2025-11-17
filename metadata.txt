@@ -1,28 +1,27 @@
 [general]
 name=Tile Boundary Layer
 qgisMinimumVersion=3.0
-description=リアルタイムでタイル境界を表示するプラグイン
+description=Display Web Mercator tile boundaries in real-time
 version=1.0.0
 author=Hirofumi Kanda
 email=nandakandahirofumi322@yahoo.co.jp
 
-about=地図のパンやズームに応じて自動的にタイル境界とタイル座標を表示します。Webメルカトルタイル方式に対応し、開発者やGIS作業者がタイル構造を視覚的に理解するのに役立ちます。
+about=A QGIS plugin that automatically displays Web Mercator tile boundaries and coordinates based on map view changes. This plugin helps developers and GIS workers visualize tile structures in real-time.
 
 tracker=https://github.com/hirofumikanda/tile-boundary-layer-plugin/issues
 repository=https://github.com/hirofumikanda/tile-boundary-layer-plugin
 category=Vector
 
-tags=tiles,web mercator,real-time,overlay,development
+tags=tiles,web mercator,real-time,overlay
 
 homepage=https://github.com/hirofumikanda/tile-boundary-layer-plugin
 icon=icon.png
 experimental=False
 deprecated=False
 
-changelog=
-    Version 1.0.0
-    - 初回リリース
-    - リアルタイムタイル境界表示
-    - 自動ズームレベル検出
-    - タイル座標ラベル表示
-    - プラグインのオン/オフ切り替え機能
+changelog=Version 1.0.0
+ - Initial release
+ - Real-time tile boundary display
+ - Automatic zoom level detection
+ - Tile coordinate labels
+ - Plugin toggle functionality

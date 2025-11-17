@@ -1,46 +1,46 @@
 # Tile Boundary Layer Plugin
 
-QGIS用のタイル境界表示プラグインです。地図のパンやズームに応じて、リアルタイムでWebメルカトルタイル境界を表示します。
+A QGIS plugin for displaying tile boundaries in real-time. This plugin automatically displays Web Mercator tile boundaries as you pan and zoom the map.
 
-## 機能
+## Features
 
-- **リアルタイム更新**: 地図を移動・拡大縮小すると自動的にタイル境界が更新されます
-- **自動ズーム検出**: 現在の地図スケールから適切なタイルズームレベルを自動計算
-- **タイル座標表示**: 各タイルに z/x/y 形式の座標ラベルを表示
-- **簡単操作**: ツールバーボタンまたはメニューから簡単にオン/オフ切り替え
+- **Real-time Updates**: Tile boundaries are automatically updated when you move or zoom the map
+- **Automatic Zoom Detection**: Automatically calculates the appropriate tile zoom level from the current map scale
+- **Tile Coordinate Display**: Shows z/x/y format coordinate labels for each tile
+- **Easy Operation**: Simple on/off toggle via toolbar button or menu
 
-## インストール方法
+## Installation
 
-1. 本リポジトリのCode → Download ZIPで`tile-boundary-layer-plugin-main.zip`をダウンロード
-2. QGISを起動
-3. **プラグイン** → **プラグインの管理とインストール**
-4. **ZIPファイルからインストール** タブを選択
-5. `tile-boundary-layer-plugin-main.zip` ファイルを選択してインストール
-6. **インストール済み** タブで「Tile Boundary Layer」を有効化
+1. Download `tile-boundary-layer-plugin-main.zip` from this repository (Code → Download ZIP)
+2. Launch QGIS
+3. Go to **Plugins** → **Manage and Install Plugins**
+4. Select the **Install from ZIP** tab
+5. Choose the `tile-boundary-layer-plugin-main.zip` file and install
+6. Enable "Tile Boundary Layer" in the **Installed** tab
 
-## 使用方法
+## Usage
 
-1. プラグインを有効化すると、ツールバーにタイルグリッドアイコンが表示されます
-2. アイコンをクリックするか、**プラグイン** → **Tile Boundary Layer** → **タイル境界レイヤ表示切り替え** を選択
-3. タイル境界が赤い線で表示され、各タイルの中央に座標ラベルが表示されます
-4. 地図をパンまたはズームすると、タイル境界が自動的に更新されます
-5. 再度アイコンをクリックするか、**プラグイン** → **Tile Boundary Layer** → **タイル境界レイヤ表示切り替え** を選択すると、表示を停止できます
+1. After enabling the plugin, a tile grid icon will appear in the toolbar
+2. Click the icon or select **Plugins** → **Tile Boundary Layer** → **Toggle Tile Boundary Layer**
+3. Tile boundaries will be displayed as red lines with coordinate labels at the center of each tile
+4. Tile boundaries will automatically update when you pan or zoom the map
+5. Click the icon again or select the menu option to stop the display
 
-## 技術仕様
+## Technical Specifications
 
-- **対応QGIS**: 3.0以上
-- **座標系**: EPSG:3857 (Web Mercator)
-- **タイルサイズ**: 256 x 256 ピクセル
+- **QGIS Compatibility**: 3.0 and above
+- **Coordinate System**: EPSG:3857 (Web Mercator)
+- **Tile Size**: 256 x 256 pixels
 
-## 開発者向け情報
+## Developer Information
 
-プラグインの構成：
-- `__init__.py`: プラグインエントリーポイント
-- `tile_boundary_layer_plugin.py`: メインプラグインクラス
-- `tile_boundary_layer_manager.py`: タイルレイヤ管理ロジック
-- `metadata.txt`: プラグインメタデータ
-- `icon.png`: プラグインアイコン
+Plugin structure:
+- `__init__.py`: Plugin entry point
+- `tile_boundary_layer_plugin.py`: Main plugin class
+- `tile_boundary_layer_manager.py`: Tile layer management logic
+- `metadata.txt`: Plugin metadata
+- `icon.png`: Plugin icon
 
-## ライセンス
+## License
 
 MIT License
