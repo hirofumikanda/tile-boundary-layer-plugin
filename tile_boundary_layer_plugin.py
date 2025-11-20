@@ -1,7 +1,7 @@
 import os
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QMessageBox
 
 from .tile_boundary_layer_manager import TileBoundaryLayerManager
 
@@ -65,12 +65,34 @@ class TileBoundaryLayerPlugin:
     def toggle_tile_layer(self):
         """タイル境界レイヤ表示の切り替え"""
         if self.manager is None:
+            # タイルタイプの選択ダイアログを表示
+            msg_box = QMessageBox(self.iface.mainWindow())
+            msg_box.setWindowTitle('タイルタイプの選択')
+            msg_box.setText('使用するタイルタイプを選択してください')
+            msg_box.setIcon(QMessageBox.Question)
+            
+            xyz_button = msg_box.addButton('XYZタイル (256px)', QMessageBox.AcceptRole)
+            vector_button = msg_box.addButton('ベクタタイル (512px)', QMessageBox.AcceptRole)
+            cancel_button = msg_box.addButton('キャンセル', QMessageBox.RejectRole)
+            msg_box.setDefaultButton(xyz_button)
+            
+            msg_box.exec_()
+            clicked_button = msg_box.clickedButton()
+            
+            if clicked_button == cancel_button:
+                # キャンセルされた場合はチェックを外して終了
+                self.toggle_action.setChecked(False)
+                return
+            
+            is_vector_tile = (clicked_button == vector_button)
+            tile_type_name = 'ベクタタイル (512px)' if is_vector_tile else 'XYZタイル (256px)'
+            
             # マネージャーを作成して表示開始
-            self.manager = TileBoundaryLayerManager(self.iface)
+            self.manager = TileBoundaryLayerManager(self.iface, is_vector_tile=is_vector_tile)
             self.toggle_action.setChecked(True)
             self.iface.messageBar().pushMessage(
                 'Tile Boundary Layer',
-                'タイル境界レイヤの表示を開始しました',
+                f'タイル境界レイヤの表示を開始しました ({tile_type_name})',
                 level=0,  # INFO level
                 duration=3
             )

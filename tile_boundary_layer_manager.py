@@ -21,27 +21,28 @@ from qgis.core import (
 
 # Webメルカトル定義
 ORIGIN_SHIFT = 20037508.342789244
-TILE_SIZE = 256
+TILE_SIZE_XYZ = 256
+TILE_SIZE_VECTOR = 512
 
-def resolution(z):
-    return (2 * ORIGIN_SHIFT) / (TILE_SIZE * 2 ** z)
+def resolution(z, tile_size=TILE_SIZE_XYZ):
+    return (2 * ORIGIN_SHIFT) / (tile_size * 2 ** z)
 
-def mercator_to_tile(mx, my, z):
+def mercator_to_tile(mx, my, z, tile_size=TILE_SIZE_XYZ):
     """EPSG:3857 -> タイル x, y"""
-    res = resolution(z)
+    res = resolution(z, tile_size)
     px = (mx + ORIGIN_SHIFT) / res
     py = (ORIGIN_SHIFT - my) / res
-    tx = int(px / TILE_SIZE)
-    ty = int(py / TILE_SIZE)
+    tx = int(px / tile_size)
+    ty = int(py / tile_size)
     return tx, ty
 
-def tile_bounds(tx, ty, z):
+def tile_bounds(tx, ty, z, tile_size=TILE_SIZE_XYZ):
     """タイル x, y, z -> EPSG:3857 のバウンディングボックス (minx, miny, maxx, maxy)"""
-    res = resolution(z)
-    minx = tx * TILE_SIZE * res - ORIGIN_SHIFT
-    maxx = (tx + 1) * TILE_SIZE * res - ORIGIN_SHIFT
-    maxy = ORIGIN_SHIFT - ty * TILE_SIZE * res
-    miny = ORIGIN_SHIFT - (ty + 1) * TILE_SIZE * res
+    res = resolution(z, tile_size)
+    minx = tx * tile_size * res - ORIGIN_SHIFT
+    maxx = (tx + 1) * tile_size * res - ORIGIN_SHIFT
+    maxy = ORIGIN_SHIFT - ty * tile_size * res
+    miny = ORIGIN_SHIFT - (ty + 1) * tile_size * res
     return (minx, miny, maxx, maxy)
 
 def is_valid_tile(tx, ty, z):
@@ -50,7 +51,7 @@ def is_valid_tile(tx, ty, z):
     max_tile = 2 ** z
     return 0 <= tx < max_tile and 0 <= ty < max_tile
 
-def get_canvas_zoom(iface) -> int:
+def get_canvas_zoom(iface, tile_size=TILE_SIZE_XYZ) -> int:
     """キャンバスの表示状態から Webメルカトルの z を推定"""
     canvas = iface.mapCanvas()
     
@@ -69,7 +70,7 @@ def get_canvas_zoom(iface) -> int:
     meters_per_pixel = scale / (39.37 * dpi)
     
     # ズームレベルを計算（Web Mercatorタイル方式）
-    z_float = math.log2((2 * ORIGIN_SHIFT) / (TILE_SIZE * meters_per_pixel))
+    z_float = math.log2((2 * ORIGIN_SHIFT) / (tile_size * meters_per_pixel))
     z_int = int(round(z_float))
     
     return z_int
@@ -78,12 +79,14 @@ def get_canvas_zoom(iface) -> int:
 class TileBoundaryLayerManager(QObject):
     """地図の変更に応じてタイル境界レイヤを自動更新するマネージャー"""
     
-    def __init__(self, iface, zoom_setting=None):
+    def __init__(self, iface, zoom_setting=None, is_vector_tile=False):
         super().__init__()
         self.iface = iface
         self.canvas = iface.mapCanvas()
         self.current_layer = None
         self.zoom_setting = zoom_setting  # None の場合自動推定
+        self.is_vector_tile = is_vector_tile  # ベクタタイルモードかどうか
+        self.tile_size = TILE_SIZE_VECTOR if is_vector_tile else TILE_SIZE_XYZ
         
         # 地図の変更イベントに接続
         self.canvas.extentsChanged.connect(self.update_tile_layer)
@@ -147,8 +150,8 @@ class TileBoundaryLayerManager(QObject):
         miny, maxy = ext.yMinimum(), ext.yMaximum()
 
         # ---- 表示範囲にかかるタイル範囲 ----
-        min_tx, max_ty = mercator_to_tile(minx, miny, zoom_level)
-        max_tx, min_ty = mercator_to_tile(maxx, maxy, zoom_level)
+        min_tx, max_ty = mercator_to_tile(minx, miny, zoom_level, self.tile_size)
+        max_tx, min_ty = mercator_to_tile(maxx, maxy, zoom_level, self.tile_size)
         tx0, tx1 = sorted([min_tx, max_tx])
         ty0, ty1 = sorted([min_ty, max_ty])
 
@@ -172,7 +175,7 @@ class TileBoundaryLayerManager(QObject):
                 if not is_valid_tile(tx, ty, zoom_level):
                     continue
                     
-                minx, miny, maxx, maxy = tile_bounds(tx, ty, zoom_level)
+                minx, miny, maxx, maxy = tile_bounds(tx, ty, zoom_level, self.tile_size)
                 pts = [
                     QgsPointXY(minx, miny),
                     QgsPointXY(maxx, miny),
@@ -233,7 +236,7 @@ class TileBoundaryLayerManager(QObject):
         """地図の変更に応じてタイル境界レイヤを更新"""
         # 現在のズームレベルを取得
         if self.zoom_setting is None:
-            current_zoom = get_canvas_zoom(self.iface)
+            current_zoom = get_canvas_zoom(self.iface, self.tile_size)
         else:
             current_zoom = self.zoom_setting
         
