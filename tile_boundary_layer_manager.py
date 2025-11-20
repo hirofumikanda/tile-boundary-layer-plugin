@@ -57,14 +57,15 @@ def get_canvas_zoom(iface) -> int:
     # より正確な方法：QGISのスケールとDPIを使用
     scale = canvas.scale()
     
-    # DPIを取得（通常は96だが、実際の値を使用）
+    # DPIを取得（論理DPIを使用 - HiDPIディスプレイでも常に96）
+    # QGISのタイルレンダリングは論理DPIを基準とするため、物理DPIではなく論理DPIを使用
     try:
-        dpi = iface.mainWindow().physicalDpiX()
+        dpi = iface.mainWindow().logicalDpiX()
     except:
         dpi = 96  # フォールバック値
     
     # メートル/ピクセルを計算
-    # 1インチ = 39.37メートル、1インチ = dpi ピクセル
+    # 1メートル = 39.37インチ、1インチ = dpi ピクセル
     meters_per_pixel = scale / (39.37 * dpi)
     
     # ズームレベルを計算（Web Mercatorタイル方式）
