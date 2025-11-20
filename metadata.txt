@@ -2,7 +2,7 @@
 name=Tile Boundary Layer
 qgisMinimumVersion=3.0
 description=Display Web Mercator tile boundaries in real-time
-version=1.0.0
+version=1.1.0
 author=Hirofumi Kanda
 email=nandakandahirofumi322@yahoo.co.jp
 
@@ -19,7 +19,11 @@ icon=icon.png
 experimental=False
 deprecated=False
 
-changelog=Version 1.0.0
+changelog=Version 1.1.0
+ - Fixed DPI acquisition method to use logical DPI for accurate zoom level detection
+ - Added support for vector tiles with variable tile size (256px for XYZ tiles, 512px for vector tiles)
+ - Added tile type selection dialog (XYZ Tile / Vector Tile)
+ Version 1.0.0
  - Initial release
  - Real-time tile boundary display
  - Automatic zoom level detection
