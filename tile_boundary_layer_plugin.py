@@ -13,49 +13,49 @@ class TileBoundaryLayerPlugin:
         self.plugin_dir = os.path.dirname(__file__)
         self.manager = None
         
-        # プラグイン用のアクション
+        # Plugin actions
         self.actions = []
         self.menu = '&Tile Boundary Layer'
     
     def tr(self, message):
-        """翻訳用メソッド"""
+        """Translation method"""
         return QCoreApplication.translate('TileBoundaryLayerPlugin', message)
     
     def initGui(self):
-        """プラグインのGUI初期化"""
-        # アイコンパス
+        """Initialize plugin GUI"""
+        # Icon path
         icon_path = os.path.join(self.plugin_dir, 'icon.png')
         
-        # タイル境界レイヤ表示の切り替えアクション
+        # Toggle tile boundary layer action
         self.toggle_action = QAction(
             QIcon(icon_path) if os.path.exists(icon_path) else QIcon(),
-            self.tr('タイル境界レイヤ表示切り替え'),
+            self.tr('Toggle Tile Boundary Layer'),
             self.iface.mainWindow()
         )
         self.toggle_action.triggered.connect(self.toggle_tile_layer)
         self.toggle_action.setCheckable(True)
-        self.toggle_action.setStatusTip(self.tr('タイル境界レイヤの表示を切り替えます'))
-        self.toggle_action.setWhatsThis(self.tr('地図上にタイル境界と座標を表示/非表示します'))
+        self.toggle_action.setStatusTip(self.tr('Toggle tile boundary layer display'))
+        self.toggle_action.setWhatsThis(self.tr('Show/hide tile boundaries and coordinates on the map'))
         
-        # メニューとツールバーに追加
+        # Add to menu and toolbar
         self.iface.addToolBarIcon(self.toggle_action)
         self.iface.addPluginToMenu(self.menu, self.toggle_action)
         
         self.actions.append(self.toggle_action)
     
     def unload(self):
-        """プラグインのアンロード処理"""
-        # マネージャーをクリーンアップ
+        """Unload plugin"""
+        # Cleanup manager
         if self.manager is not None:
             try:
                 self.manager.disconnect_signals()
                 self.manager.remove_current_layer()
             except Exception as e:
-                print(f"マネージャークリーンアップエラー: {e}")
+                print(f"Manager cleanup error: {e}")
             finally:
                 self.manager = None
         
-        # GUI要素を削除
+        # Remove GUI elements
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
@@ -63,52 +63,52 @@ class TileBoundaryLayerPlugin:
         self.actions = []
     
     def toggle_tile_layer(self):
-        """タイル境界レイヤ表示の切り替え"""
+        """Toggle tile boundary layer display"""
         if self.manager is None:
-            # タイルタイプの選択ダイアログを表示
+            # Show tile type selection dialog
             msg_box = QMessageBox(self.iface.mainWindow())
-            msg_box.setWindowTitle('タイルタイプの選択')
-            msg_box.setText('使用するタイルタイプを選択してください')
+            msg_box.setWindowTitle('Select Tile Type')
+            msg_box.setText('Please select the tile type to use')
             msg_box.setIcon(QMessageBox.Question)
             
-            xyz_button = msg_box.addButton('XYZタイル (256px)', QMessageBox.AcceptRole)
-            vector_button = msg_box.addButton('ベクタタイル (512px)', QMessageBox.AcceptRole)
-            cancel_button = msg_box.addButton('キャンセル', QMessageBox.RejectRole)
+            xyz_button = msg_box.addButton('XYZ Tile (256px)', QMessageBox.AcceptRole)
+            vector_button = msg_box.addButton('Vector Tile (512px)', QMessageBox.AcceptRole)
+            cancel_button = msg_box.addButton('Cancel', QMessageBox.RejectRole)
             msg_box.setDefaultButton(xyz_button)
             
             msg_box.exec_()
             clicked_button = msg_box.clickedButton()
             
             if clicked_button == cancel_button:
-                # キャンセルされた場合はチェックを外して終了
+                # Uncheck and exit if cancelled
                 self.toggle_action.setChecked(False)
                 return
             
             is_vector_tile = (clicked_button == vector_button)
-            tile_type_name = 'ベクタタイル (512px)' if is_vector_tile else 'XYZタイル (256px)'
+            tile_type_name = 'Vector Tile (512px)' if is_vector_tile else 'XYZ Tile (256px)'
             
-            # マネージャーを作成して表示開始
+            # Create manager and start display
             self.manager = TileBoundaryLayerManager(self.iface, is_vector_tile=is_vector_tile)
             self.toggle_action.setChecked(True)
             self.iface.messageBar().pushMessage(
                 'Tile Boundary Layer',
-                f'タイル境界レイヤの表示を開始しました ({tile_type_name})',
+                f'Tile boundary layer display started ({tile_type_name})',
                 level=0,  # INFO level
                 duration=3
             )
         else:
-            # マネージャーを削除して表示停止
+            # Remove manager and stop display
             try:
                 self.manager.disconnect_signals()
                 self.manager.remove_current_layer()
             except Exception as e:
-                print(f"マネージャー停止エラー: {e}")
+                print(f"Manager stop error: {e}")
             finally:
                 self.manager = None
                 self.toggle_action.setChecked(False)
             self.iface.messageBar().pushMessage(
                 'Tile Boundary Layer',
-                'タイル境界レイヤの表示を停止しました',
+                'Tile boundary layer display stopped',
                 level=0,  # INFO level
                 duration=3
             )
