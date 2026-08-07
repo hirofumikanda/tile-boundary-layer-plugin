@@ -1,9 +1,10 @@
 [general]
 name=Tile Boundary Layer
 qgisMinimumVersion=3.0
+qgisMaximumVersion=4.99
 description=Display Web Mercator tile boundaries in real-time
-version=1.1.0
-author=Hirofumi Kanda
+version=1.2.0
+author=Hirofumi Kanda, suprun
 email=nandakandahirofumi322@yahoo.co.jp
 
 about=A QGIS plugin that automatically displays Web Mercator tile boundaries and coordinates based on map view changes. This plugin helps developers and GIS workers visualize tile structures in real-time.
@@ -19,7 +20,18 @@ icon=icon.png
 experimental=False
 deprecated=False
 
-changelog=Version 1.1.0
+changelog=Version 1.2.0
+ - Added Red, Black, and White grid line modes
+ - Stored the selected grid color mode in the QGIS profile
+ - Applied color changes without rebuilding grid features or replacing the layer
+ - Hidden the internal grid layer from the Layers panel
+ - Kept the grid above all project layers and custom layer order
+ - Added QGIS 4.x and Qt6 compatibility through version-independent qgis.PyQt imports
+ - Added a split toolbar button with a main toggle and side grid type menu
+ - Replaced the tile type dialog with a toolbar drop-down menu
+ - Added distinct XYZ and Vector grid icons with selected-icon feedback
+ - Optimized canvas updates with debouncing, range caching, and a persistent layer
+ Version 1.1.0
  - Fixed DPI acquisition method to use logical DPI for accurate zoom level detection
  - Added support for vector tiles with variable tile size (256px for XYZ tiles, 512px for vector tiles)
  - Added tile type selection dialog (XYZ Tile / Vector Tile)
